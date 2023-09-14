@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple ToDo App</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./script.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Simple ToDo App</h1>
+      <div class="add-todo">
+        <input type="text" id="todo-input" placeholder="Add a new ToDo" />
+        <button onclick="addTodo()">Add</button>
+      </div>
+      <ul class="todo-list" id="todo-list">
+        <!-- ToDo items will be dynamically added here -->
+      </ul>
+    </div>
+
+    <script>
+      // JavaScript code for the ToDo app
+      // Initialize tasks from localStorage or an empty array
+      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+      // Function to render tasks
+      function renderTasks() {
+        const todoList = document.getElementById("todo-list");
+        todoList.innerHTML = "";
+
+        tasks.forEach((task, index) => {
+          const listItem = document.createElement("li");
+          listItem.className = `todo-item${task.completed ? " completed" : ""}`;
+          listItem.innerHTML = `
+                    <div class="text">${task.text}</div>
+                    <div class="actions">
+                        <button onclick="completeTodo(${index})"><i class="fas fa-check"></i></button>
+                        <button onclick="editTodo(${index})"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteTodo(${index})"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                `;
+          todoList.appendChild(listItem);
+        });
+      }
+
+      // Function to add a new task
+      function addTodo() {
+        const input = document.getElementById("todo-input");
+        const text = input.value.trim();
+        if (text !== "") {
+          tasks.push({ text, completed: false });
+          input.value = "";
+          renderTasks();
+          saveTasks();
+        }
+      }
+
+      // Function to mark a task as completed or uncompleted
+      function completeTodo(index) {
+        tasks[index].completed = !tasks[index].completed;
+        renderTasks();
+        saveTasks();
+      }
+
+      // Function to delete a task
+      function deleteTodo(index) {
+        tasks.splice(index, 1);
+        renderTasks();
+        saveTasks();
+      }
+
+      // Function to edit a task
+      function editTodo(index) {
+        const newText = prompt("Edit your task:", tasks[index].text);
+        if (newText !== null) {
+          tasks[index].text = newText.trim();
+          renderTasks();
+          saveTasks();
+        }
+      }
+
+      // Function to save tasks to localStorage
+      function saveTasks() {
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+
+      // Initial rendering of tasks
+      renderTasks();
+    </script>
+  </body>
+</html>
